@@ -1,6 +1,21 @@
 import { Response } from 'express';
 import mongoose from 'mongoose'
+import jwt, { SignOptions} from 'jsonwebtoken'
+import { CustomJwtPayload } from '../types/inventory';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret'
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '12h'
+
+
+export const generateToken = (payload: CustomJwtPayload): string => {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN,
+  } as SignOptions)
+}
+
+export const verifyToken = (token: string): CustomJwtPayload => {
+  return jwt.verify(token, JWT_SECRET) as CustomJwtPayload
+}
 
 // Reusable error handler
  export const handleError = (res: Response, error: unknown, statusCode = 500): void => {
@@ -16,3 +31,6 @@ import mongoose from 'mongoose'
   }
   return true
 }
+
+
+// export const getUserPermissions = async (user: IUser): Promise<string[]
